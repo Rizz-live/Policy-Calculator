@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Rizz Live — Salary Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --navy:#04021a;--navy2:#060320;
+  --panel:#0c0630;--panel2:#100840;
+  --pink:#ff3ca8;--pink2:#ff6ec4;--pink3:#ffb3e0;--pink-glow:rgba(255,60,168,0.5);--pink-dim:rgba(255,60,168,0.15);
+  --cyan:#00e5ff;--cyan2:#4df3ff;--cyan-glow:rgba(0,229,255,0.5);--cyan-dim:rgba(0,229,255,0.12);
+  --purple:#7c3aed;--purple2:#a855f7;--purple3:#d8b4fe;--purple-glow:rgba(124,58,237,0.5);
+  --gold:#fbbf24;--gold2:#fde68a;
+  --green:#00ff9d;--green-glow:rgba(0,255,157,0.4);
+  --border:rgba(0,229,255,0.2);--border2:rgba(255,60,168,0.2);--border3:rgba(124,58,237,0.25);
+  --text:rgba(255,255,255,0.92);--text-dim:rgba(200,210,255,0.55);--text-muted:rgba(150,160,220,0.30);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Exo 2',sans-serif;background:var(--navy);color:var(--text);overflow-x:hidden;min-height:100vh;}
+.bg-scene{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.bg-scene::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 15% 10%,rgba(124,58,237,0.18) 0%,transparent 55%),radial-gradient(ellipse 70% 55% at 85% 90%,rgba(255,60,168,0.14) 0%,transparent 50%),radial-gradient(ellipse 60% 50% at 50% 50%,rgba(0,229,255,0.06) 0%,transparent 65%),linear-gradient(180deg,#04021a 0%,#060320 40%,#04021a 100%);}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.04) 1px,transparent 1px);background-size:40px 40px;animation:gridMove 20s linear infinite;}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(40px)}}
+.bg-scan{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,20,0.15) 2px,rgba(0,0,20,0.15) 4px);}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;}
+.orb-1{width:500px;height:500px;top:-150px;left:-100px;background:rgba(124,58,237,0.18);animation:orbFloat1 12s ease-in-out infinite;}
+.orb-2{width:400px;height:400px;bottom:-100px;right:-80px;background:rgba(255,60,168,0.15);animation:orbFloat2 15s ease-in-out infinite;}
+.orb-3{width:300px;height:300px;top:40%;left:50%;transform:translate(-50%,-50%);background:rgba(0,229,255,0.08);animation:orbFloat3 10s ease-in-out infinite;}
+@keyframes orbFloat1{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,20px)}}
+@keyframes orbFloat2{0%,100%{transform:translate(0,0)}50%{transform:translate(-25px,-15px)}}
+@keyframes orbFloat3{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.15)}}
+.particles{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.particle{position:absolute;border-radius:50%;opacity:0;animation:particleDrift linear infinite;}
+@keyframes particleDrift{0%{transform:translateY(100vh) scale(0);opacity:0;}8%{opacity:0.9;}92%{opacity:0.2;}100%{transform:translateY(-20px) scale(1.2);opacity:0;}}
+.neon-line-top{position:fixed;top:0;left:0;right:0;height:2px;z-index:200;pointer-events:none;background:linear-gradient(90deg,transparent 0%,var(--cyan) 20%,var(--pink) 50%,var(--purple2) 80%,transparent 100%);box-shadow:0 0 15px var(--cyan-glow),0 0 30px var(--pink-glow);animation:neonPulse 3s ease-in-out infinite;}
+@keyframes neonPulse{0%,100%{opacity:0.8}50%{opacity:1}}
+.float-emoji{position:fixed;font-size:20px;pointer-events:none;z-index:0;animation:floatUp linear infinite;opacity:0;}
+@keyframes floatUp{0%{transform:translateY(0) scale(0.8) rotate(-10deg);opacity:0;}10%{opacity:0.85;}80%{opacity:0.5;}100%{transform:translateY(-100vh) scale(1.1) rotate(10deg);opacity:0;}}
+.wrapper{position:relative;z-index:1;max-width:480px;margin:0 auto;padding-bottom:60px;min-height:100vh;}
+.header{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:14px;padding:12px 18px;background:rgba(4,2,26,0.88);backdrop-filter:blur(40px) saturate(200%);-webkit-backdrop-filter:blur(40px) saturate(200%);border-bottom:1px solid rgba(0,229,255,0.15);}
+.header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),var(--pink),var(--purple2),transparent);animation:headerLine 4s ease-in-out infinite;}
+@keyframes headerLine{0%,100%{opacity:0.6}50%{opacity:1}}
+.logo-mark{width:44px;height:44px;border-radius:12px;flex-shrink:0;overflow:hidden;border:1px solid rgba(0,229,255,0.4);box-shadow:0 0 16px var(--cyan-glow),inset 0 1px 0 rgba(0,229,255,0.3);background:linear-gradient(135deg,#0a0535,#06031a);display:flex;align-items:center;justify-content:center;}
+.logo-mark span{font-family:'Orbitron',monospace;font-weight:900;font-size:18px;background:linear-gradient(135deg,#00e5ff,#ff3ca8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.brand-name{font-family:'Orbitron',monospace;font-weight:800;font-size:15px;letter-spacing:3px;background:linear-gradient(90deg,var(--cyan2),var(--pink2),var(--cyan2));background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;animation:textShimmer 4s linear infinite;}
+@keyframes textShimmer{0%{background-position:0%}100%{background-position:200%}}
+.brand-sub{font-family:'Rajdhani',sans-serif;font-size:8px;letter-spacing:3px;color:var(--text-muted);text-transform:uppercase;font-weight:600;margin-top:1px;}
+.calc-badge{margin-left:auto;display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,rgba(0,229,255,0.12),rgba(0,229,255,0.04));border:1px solid rgba(0,229,255,0.35);border-radius:20px;padding:4px 12px;font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;color:var(--cyan2);font-weight:700;}
+.hero{padding:36px 20px 20px;text-align:center;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(0,229,255,0.1),rgba(124,58,237,0.1));border:1px solid rgba(0,229,255,0.3);border-radius:30px;padding:6px 18px;margin-bottom:16px;font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;color:var(--cyan2);text-transform:uppercase;}
+.hero-eyebrow-dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:dotPulse 1.5s ease-in-out infinite;}
+@keyframes dotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.6)}}
+.hero-title{font-family:'Orbitron',monospace;font-size:28px;font-weight:900;line-height:1.1;color:#fff;margin-bottom:6px;}
+.hero-title .hl{background:linear-gradient(90deg,#00e5ff,#ff3ca8,#a855f7,#00ff9d,#00e5ff);background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:rizzAnim 2s linear infinite;filter:drop-shadow(0 0 12px rgba(0,229,255,0.6));}
+@keyframes rizzAnim{0%{background-position:0%}100%{background-position:300%}}
+.hero-sub{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:500;color:var(--text-dim);letter-spacing:1px;margin-top:4px;}
+.neon-divider{display:flex;align-items:center;justify-content:center;gap:12px;margin:14px 0 4px;}
+.nd-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--cyan));max-width:80px;}
+.nd-line.rev{background:linear-gradient(90deg,var(--cyan),transparent);}
+.nd-gem{width:8px;height:8px;border-radius:2px;background:var(--cyan);transform:rotate(45deg);box-shadow:0 0 12px var(--cyan-glow);animation:gemPulse 2s ease-in-out infinite;}
+@keyframes gemPulse{0%,100%{box-shadow:0 0 8px var(--cyan-glow)}50%{box-shadow:0 0 20px var(--cyan-glow),0 0 40px rgba(0,229,255,0.3)}}
+
+/* MAIN CARD */
+.calc-card{margin:10px 12px 0;background:linear-gradient(135deg,rgba(8,4,40,0.97),rgba(10,5,38,0.99));border:1px solid var(--border3);border-radius:18px;overflow:hidden;box-shadow:0 4px 40px rgba(0,229,255,0.05),inset 0 1px 0 rgba(0,229,255,0.08);animation:cardIn 0.5s cubic-bezier(0.16,1,0.3,1) both;position:relative;}
+.calc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 5%,var(--cyan) 40%,var(--pink) 60%,transparent 95%);opacity:0.7;}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.card-section{padding:16px 18px;border-bottom:1px solid rgba(0,229,255,0.07);}
+.card-section:last-child{border-bottom:none;}
+.section-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--cyan2);text-transform:uppercase;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.section-label::before{content:'';width:14px;height:1px;background:linear-gradient(90deg,var(--cyan),transparent);display:inline-block;}
+
+/* HOST TYPE SELECTOR */
+.host-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.host-opt{background:linear-gradient(135deg,rgba(8,4,40,0.9),rgba(12,6,48,0.95));border:1px solid rgba(0,229,255,0.2);border-radius:14px;padding:14px 12px;cursor:pointer;position:relative;transition:all 0.3s cubic-bezier(0.16,1,0.3,1);display:flex;flex-direction:column;gap:4px;}
+.host-opt::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,229,255,0.4),transparent);opacity:0;transition:opacity 0.3s;}
+.host-opt:hover{border-color:rgba(0,229,255,0.4);transform:translateY(-2px);}
+.host-opt.active-new{border-color:var(--cyan);background:linear-gradient(135deg,rgba(0,229,255,0.12),rgba(0,229,255,0.04));box-shadow:0 0 20px rgba(0,229,255,0.2);}
+.host-opt.active-new::before{opacity:1;}
+.host-opt.active-sensual{border-color:var(--pink);background:linear-gradient(135deg,rgba(255,60,168,0.14),rgba(255,60,168,0.04));box-shadow:0 0 20px rgba(255,60,168,0.2);}
+.host-opt.active-sensual::before{background:linear-gradient(90deg,transparent,rgba(255,60,168,0.5),transparent);opacity:1;}
+.host-opt-radio{position:absolute;top:10px;right:10px;width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(0,229,255,0.35);background:transparent;display:flex;align-items:center;justify-content:center;transition:all 0.3s;}
+.host-opt.active-new .host-opt-radio,.host-opt.active-sensual .host-opt-radio{background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 10px rgba(0,229,255,0.6);}
+.host-opt.active-none .host-opt-radio{background:rgba(200,210,255,0.7);border-color:rgba(200,210,255,0.7);box-shadow:0 0 10px rgba(200,210,255,0.3);}
+.host-opt.active-none .host-opt-radio::after{opacity:1;}
+.host-opt.active-sensual .host-opt-radio{background:var(--pink);border-color:var(--pink);box-shadow:0 0 10px rgba(255,60,168,0.6);}
+.host-opt-radio::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff;opacity:0;transition:opacity 0.2s;}
+.host-opt.active-new .host-opt-radio::after,.host-opt.active-sensual .host-opt-radio::after{opacity:1;}
+.host-opt-title{font-family:'Orbitron',monospace;font-weight:700;font-size:11px;letter-spacing:1px;color:#fff;}
+.host-opt-sub{font-family:'Rajdhani',sans-serif;font-size:11px;color:var(--text-dim);font-weight:500;}
+.host-opt-tag{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;color:var(--green);margin-top:2px;}
+.alert-note{background:linear-gradient(135deg,rgba(251,191,36,0.1),rgba(251,191,36,0.03));border:1px solid rgba(251,191,36,0.3);border-radius:10px;padding:10px 12px;font-family:'Rajdhani',sans-serif;font-size:12px;color:rgba(253,230,138,0.85);line-height:1.5;display:none;}
+.alert-note.show{display:block;animation:fadeIn 0.3s ease both;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+/* WEEK SELECTOR */
+.week-tabs{display:flex;gap:6px;flex-wrap:wrap;}
+.week-tab{padding:7px 14px;border-radius:20px;border:1px solid rgba(0,229,255,0.2);background:transparent;font-family:'Orbitron',monospace;font-size:9px;font-weight:700;letter-spacing:1px;color:var(--text-dim);cursor:pointer;transition:all 0.3s;white-space:nowrap;}
+.week-tab:hover{border-color:rgba(0,229,255,0.4);color:var(--cyan2);}
+.week-tab.active{background:linear-gradient(135deg,rgba(0,229,255,0.15),rgba(0,229,255,0.05));border-color:var(--cyan);color:var(--cyan2);box-shadow:0 0 12px rgba(0,229,255,0.2);}
+.week-tab.sensual-active{background:linear-gradient(135deg,rgba(255,60,168,0.15),rgba(255,60,168,0.05));border-color:var(--pink);color:var(--pink2);box-shadow:0 0 12px rgba(255,60,168,0.2);}
+
+/* WEEK TABLE PREVIEW */
+.week-preview{margin-top:12px;overflow:hidden;border-radius:10px;border:1px solid rgba(0,229,255,0.1);}
+.wp-row{display:grid;grid-template-columns:80px 1fr 1fr 1fr;align-items:center;border-bottom:1px solid rgba(255,255,255,0.03);transition:background 0.2s;}
+.wp-row:last-child{border-bottom:none;}
+.wp-row.header-row{background:rgba(0,229,255,0.05);}
+.wp-row.active-row{background:rgba(0,229,255,0.08);}
+.wp-row.sensual-active-row{background:rgba(255,60,168,0.08);}
+.wp-cell{padding:9px 10px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;color:var(--text-dim);}
+.wp-cell.header-cell{font-family:'Orbitron',monospace;font-size:7px;font-weight:700;letter-spacing:2px;color:var(--cyan2);text-transform:uppercase;}
+.wp-cell.active-val{color:var(--green) !important;font-weight:700;}
+
+/* INPUT */
+.input-wrap{display:flex;flex-direction:column;gap:6px;}
+.neon-label{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2.5px;color:var(--cyan2);text-transform:uppercase;font-weight:700;display:flex;align-items:center;gap:8px;}
+.neon-label::before{content:'';width:10px;height:1px;background:linear-gradient(90deg,var(--cyan),transparent);display:inline-block;}
+.neon-input-field{width:100%;background:linear-gradient(135deg,rgba(0,229,255,0.04),rgba(0,0,20,0.6));border:1px solid rgba(0,229,255,0.2);border-radius:12px;padding:13px 16px;font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--text);outline:none;transition:all 0.3s;box-shadow:0 2px 12px rgba(0,0,0,0.3),inset 0 1px 0 rgba(0,229,255,0.06);}
+.neon-input-field::placeholder{color:var(--text-muted);font-weight:400;font-size:14px;}
+.neon-input-field:focus{border-color:rgba(0,229,255,0.55);background:linear-gradient(135deg,rgba(0,229,255,0.07),rgba(0,0,30,0.7));box-shadow:0 0 0 3px rgba(0,229,255,0.08),0 0 20px rgba(0,229,255,0.1);}
+.input-hint{font-family:'Rajdhani',sans-serif;font-size:11px;color:var(--text-muted);line-height:1.5;}
+
+/* BUTTONS */
+.btn-row{display:flex;gap:10px;padding:16px 18px;}
+.calc-btn{flex:1;padding:15px;background:linear-gradient(135deg,rgba(0,229,255,0.12),rgba(124,58,237,0.14),rgba(255,60,168,0.08));border:1px solid rgba(0,229,255,0.45);border-radius:14px;font-family:'Orbitron',monospace;font-weight:800;font-size:11px;letter-spacing:3px;color:var(--cyan2);text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 6px 28px rgba(0,229,255,0.15),inset 0 1px 0 rgba(0,229,255,0.2);transition:all 0.35s cubic-bezier(0.16,1,0.3,1);}
+.calc-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(0,229,255,0.08) 50%,transparent 100%);background-size:200% auto;animation:btnShimmer 3s linear infinite;}
+@keyframes btnShimmer{0%{background-position:200%}100%{background-position:-200%}}
+.calc-btn:hover{transform:translateY(-2px);border-color:var(--cyan);box-shadow:0 12px 40px rgba(0,229,255,0.25),0 0 60px rgba(0,229,255,0.08);color:#fff;}
+.calc-btn:active{transform:scale(0.98);}
+.reset-btn{padding:15px 20px;background:transparent;border:1px solid rgba(255,60,168,0.3);border-radius:14px;font-family:'Orbitron',monospace;font-weight:700;font-size:10px;letter-spacing:2px;color:rgba(255,110,196,0.7);text-transform:uppercase;cursor:pointer;transition:all 0.3s;}
+.reset-btn:hover{border-color:rgba(255,60,168,0.6);color:var(--pink2);box-shadow:0 0 16px rgba(255,60,168,0.15);}
+
+/* RESULT SECTION */
+.result-card{margin:0 12px 0;animation:cardIn 0.5s cubic-bezier(0.16,1,0.3,1) both;display:none;}
+.result-card.show{display:block;margin-top:0;}
+.result-inner{background:linear-gradient(135deg,rgba(8,4,40,0.97),rgba(10,5,38,0.99));border:1px solid var(--border3);border-radius:18px;overflow:hidden;position:relative;}
+.result-inner::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 5%,var(--green) 40%,var(--cyan) 60%,transparent 95%);opacity:0.7;}
+.result-header{padding:14px 18px;background:linear-gradient(135deg,rgba(0,255,157,0.06),rgba(0,229,255,0.03));border-bottom:1px solid rgba(0,255,157,0.08);display:flex;align-items:center;gap:10px;}
+.result-header-icon{font-size:18px;}
+.result-header-title{font-family:'Orbitron',monospace;font-weight:800;font-size:11px;letter-spacing:2px;color:var(--green);text-transform:uppercase;}
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px;}
+.res-cell{background:linear-gradient(135deg,rgba(8,4,40,0.9),rgba(12,6,48,0.95));border:1px solid rgba(0,229,255,0.12);border-radius:12px;padding:12px;position:relative;overflow:hidden;}
+.res-cell::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0.4;}
+.res-cell-label{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;color:var(--text-muted);text-transform:uppercase;font-weight:700;margin-bottom:6px;}
+.res-cell-sub{font-family:'Rajdhani',sans-serif;font-size:10px;color:var(--text-muted);margin-top:2px;}
+.res-val-big{font-family:'Orbitron',monospace;font-weight:900;font-size:20px;background:linear-gradient(135deg,var(--cyan2),var(--pink2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 8px rgba(0,229,255,0.4));}
+.res-val-green{font-family:'Orbitron',monospace;font-weight:900;font-size:18px;color:var(--green);text-shadow:0 0 12px var(--green-glow);}
+.res-val-pink{font-family:'Orbitron',monospace;font-weight:900;font-size:18px;color:var(--pink2);text-shadow:0 0 12px rgba(255,60,168,0.5);}
+.res-val-gold{font-family:'Orbitron',monospace;font-weight:900;font-size:18px;color:var(--gold2);text-shadow:0 0 12px rgba(251,191,36,0.4);}
+.res-val-muted{font-family:'Orbitron',monospace;font-weight:700;font-size:16px;color:var(--text-muted);}
+.total-cell{grid-column:1/-1;background:linear-gradient(135deg,rgba(0,255,157,0.06),rgba(0,255,157,0.02));border:1px solid rgba(0,255,157,0.2);border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;}
+.total-label{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;font-weight:700;}
+.total-val{font-family:'Orbitron',monospace;font-weight:900;font-size:26px;color:var(--green);text-shadow:0 0 20px var(--green-glow);}
+.total-usd{font-family:'Rajdhani',sans-serif;font-size:12px;color:rgba(0,255,157,0.6);margin-top:2px;text-align:right;}
+.roi-section{padding:0 16px 16px;}
+.roi-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(0,229,255,0.2),rgba(255,60,168,0.15),transparent);margin-bottom:12px;}
+.roi-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:linear-gradient(135deg,rgba(8,4,40,0.8),rgba(12,6,48,0.9));border:1px solid rgba(0,229,255,0.1);border-radius:10px;margin-bottom:8px;}
+.roi-label{font-family:'Rajdhani',sans-serif;font-size:12px;color:var(--text-dim);font-weight:600;}
+.roi-val{font-family:'Orbitron',monospace;font-size:13px;font-weight:800;}
+.roi-val.green{color:var(--green);}
+.roi-val.pink{color:var(--pink2);}
+.roi-val.cyan{color:var(--cyan2);}
+.miss-alert{margin:0 16px 14px;background:linear-gradient(135deg,rgba(255,60,168,0.09),rgba(255,60,168,0.03));border:1px solid rgba(255,60,168,0.3);border-left:2px solid var(--pink);border-radius:0 10px 10px 0;padding:10px 12px;font-family:'Rajdhani',sans-serif;font-size:12px;color:rgba(255,110,196,0.85);line-height:1.5;display:none;}
+.miss-alert.show{display:block;}
+.miss-alert strong{color:var(--pink2);}
+.withdrawal-note{margin:0 16px 16px;background:linear-gradient(135deg,rgba(0,229,255,0.05),rgba(0,229,255,0.02));border:1px solid rgba(0,229,255,0.15);border-radius:10px;padding:10px 14px;font-family:'Rajdhani',sans-serif;font-size:11px;color:var(--text-dim);line-height:1.6;}
+.withdrawal-note strong{color:var(--cyan2);}
+.footer{text-align:center;padding:30px 20px 14px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-muted);text-transform:uppercase;font-weight:600;}
+.footer span{background:linear-gradient(90deg,var(--cyan),var(--pink2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(0,229,255,0.3);border-radius:10px;}
+</style>
+</head>
+<body>
+<div class="bg-scene">
+  <div class="bg-grid"></div>
+  <div class="bg-scan"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+<div class="neon-line-top"></div>
+<div class="particles" id="particles"></div>
+
+<div class="wrapper">
+  <header class="header">
+    <div class="logo-mark"><span>R</span></div>
+    <div>
+      <div class="brand-name">Rizz Live</div>
+      <div class="brand-sub">Live Streaming Platform</div>
+    </div>
+    <div class="calc-badge">⚡ CALCULATOR</div>
+  </header>
+
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <div class="hero-eyebrow-dot"></div>
+      Salary Tool
+    </div>
+    <h1 class="hero-title"><span class="hl">SALARY</span> CALCULATOR</h1>
+    <p class="hero-sub">Enter your Rubies — host type is optional</p>
+    <div class="neon-divider"><div class="nd-line rev"></div><div class="nd-gem"></div><div class="nd-line"></div></div>
+  </div>
+
+  <!-- MAIN CALCULATOR CARD -->
+  <div class="calc-card">
+
+    <!-- HOST TYPE -->
+    <div class="card-section">
+      <div class="section-label">Host Type — Optional</div>
+      <div class="host-type-grid" style="grid-template-columns:1fr 1fr;">
+        <div class="host-opt" id="opt-new" onclick="selectHost('new')">
+          <div class="host-opt-radio" id="radio-new"></div>
+          <div class="host-opt-title">New Host</div>
+          <div class="host-opt-sub">W1–W4 guarantee</div>
+          <div class="host-opt-tag">$5 per week</div>
+        </div>
+        <div class="host-opt" id="opt-sensual" onclick="selectHost('sensual')">
+          <div class="host-opt-radio" id="radio-sensual"></div>
+          <div class="host-opt-title">Sensual Host</div>
+          <div class="host-opt-sub">W1–W5+ guarantee</div>
+          <div class="host-opt-tag" style="color:var(--pink2);">$15 per week</div>
+        </div>
+      </div>
+      <div class="alert-note show" id="none-alert">
+        ✦ <strong>No host type selected</strong> — Only Gift Income + 30% Weekly Bonus will be calculated.
+      </div>
+      <div class="alert-note" id="new-alert">
+        ⚠️ <strong>New Host selected</strong> — Sensual Host guarantee will not apply.
+      </div>
+      <div class="alert-note" id="sensual-alert">
+        ⚠️ <strong>Sensual Host selected</strong> — New Host guarantee will not apply.
+      </div>
+    </div>
+
+    <!-- WEEK SELECT -->
+    <div class="card-section" id="week-section">
+      <div class="section-label" id="week-label">New Host — Select Week</div>
+      <div class="week-tabs" id="week-tabs">
+        <div class="week-tab active" onclick="selectWeek(1)">W1</div>
+        <div class="week-tab" onclick="selectWeek(2)">W2</div>
+        <div class="week-tab" onclick="selectWeek(3)">W3</div>
+        <div class="week-tab" onclick="selectWeek(4)">W4</div>
+        <div class="week-tab" onclick="selectWeek(5)">W5+</div>
+      </div>
+      <!-- Week Table Preview -->
+      <div class="week-preview" id="week-preview"></div>
+    </div>
+
+    <!-- GIFT INCOME INPUT -->
+    <div class="card-section">
+      <div class="section-label">Gift Income</div>
+      <div class="input-wrap">
+        <label class="neon-label" for="ruby-input">How many Rubies earned from gifts this week?</label>
+        <input class="neon-input-field" type="number" id="ruby-input" placeholder="e.g. 100000" min="0" inputmode="numeric" oninput="clearResult()"/>
+        <div class="input-hint">30% weekly bonus: 4 valid days + 10 valid hours — applied automatically &nbsp;|&nbsp; 20,000 Ruby = $1 &nbsp;|&nbsp; $1 = 8,300 coins</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ACTION BUTTONS -->
+  <div class="btn-row">
+    <button class="calc-btn" onclick="calculate()">✦ &nbsp; Calculate</button>
+    <button class="reset-btn" onclick="resetAll()">Reset</button>
+  </div>
+
+  <!-- RESULT CARD -->
+  <div class="result-card" id="result-card">
+    <div class="result-inner">
+      <div class="result-header">
+        <div class="result-header-icon">💎</div>
+        <div class="result-header-title">Salary Breakdown</div>
+      </div>
+
+      <div class="res-grid">
+        <div class="res-cell">
+          <div class="res-cell-label">Gift Income (Rubies)</div>
+          <div class="res-val-big" id="r-rubies">—</div>
+          <div class="res-cell-sub">100% received</div>
+        </div>
+        <div class="res-cell">
+          <div class="res-cell-label">Gift Income ($)</div>
+          <div class="res-val-big" id="r-gift-usd">—</div>
+          <div class="res-cell-sub">20,000 Ruby = $1</div>
+        </div>
+        <div class="res-cell">
+          <div class="res-cell-label">Weekly Bonus (30%)</div>
+          <div class="res-val-green" id="r-bonus">—</div>
+          <div class="res-cell-sub" id="r-bonus-sub">—</div>
+        </div>
+        <div class="res-cell">
+          <div class="res-cell-label">New Host Guarantee</div>
+          <div id="r-guarantee">—</div>
+          <div class="res-cell-sub" id="r-guarantee-sub">—</div>
+        </div>
+        <div class="total-cell">
+          <div>
+            <div class="total-label">Total Salary</div>
+            <div class="res-cell-sub" style="margin-top:4px;color:var(--text-muted);font-size:10px;">Gift + Bonus + Guarantee</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="total-val" id="r-total">—</div>
+            <div class="total-usd" id="r-total-ruby">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="miss-alert" id="miss-alert"></div>
+
+      <div class="roi-section">
+        <div class="roi-divider"></div>
+        <div class="section-label" style="margin-bottom:10px;font-size:7px;">Return on Investment</div>
+        <div class="roi-row">
+          <div class="roi-label">Investment ($)</div>
+          <div class="roi-val cyan" id="r-investment">—</div>
+        </div>
+        <div class="roi-row">
+          <div class="roi-label">Total Earned ($)</div>
+          <div class="roi-val green" id="r-earned">—</div>
+        </div>
+        <div class="roi-row">
+          <div class="roi-label">Return %</div>
+          <div class="roi-val" id="r-return">—</div>
+        </div>
+        <div class="roi-row">
+          <div class="roi-label">Net Gain / Loss ($)</div>
+          <div class="roi-val" id="r-net">—</div>
+        </div>
+      </div>
+
+      <div class="withdrawal-note">
+        💡 <strong>Withdrawal:</strong> Once per day, minimum $10. Bonus is credited every Monday in Rubies.
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">© 2026 <span>RIZZ LIVE</span> · <span>All Rights Reserved</span></div>
+</div>
+
+<script>
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let hostType = 'none';
+let selectedWeek = 1;
+
+// ─── WEEK DATA ────────────────────────────────────────────────────────────────
+const NEW_HOST_WEEKS = [
+  { week:'Week 1', target:'No target',     days:'4d / 10h', guarantee:5  },
+  { week:'Week 2', target:'50,000',        days:'4d / 10h', guarantee:5  },
+  { week:'Week 3', target:'1,00,000',      days:'4d / 10h', guarantee:5  },
+  { week:'Week 4', target:'1,50,000',      days:'4d / 10h', guarantee:5  },
+  { week:'Week 5+',target:'Basic policy',  days:'—',        guarantee:0  },
+];
+const NEW_HOST_RAW_TARGETS = [0, 50000, 100000, 150000, 999999999];
+
+const SENSUAL_WEEKS = [
+  { week:'Week 1', target:'No target',     days:'4d / 10h', guarantee:15 },
+  { week:'Week 2', target:'1,00,000',      days:'4d / 10h', guarantee:15 },
+  { week:'Week 3', target:'1,50,000',      days:'4d / 10h', guarantee:15 },
+  { week:'Week 4', target:'2,00,000',      days:'4d / 10h', guarantee:15 },
+  { week:'Week 5+',target:'3,00,000',      days:'4d / 10h', guarantee:15 },
+];
+const SENSUAL_RAW_TARGETS = [0, 100000, 150000, 200000, 300000];
+
+const BONUS_THRESHOLD = { days:4, hours:10 };
+const RUBY_PER_USD = 20000;
+const COIN_PER_USD = 8300;
+
+// ─── HOST SELECT ──────────────────────────────────────────────────────────────
+function selectHost(type) {
+  // Toggle: clicking already-active host deselects it
+  if (hostType === type) type = 'none';
+  hostType = type;
+
+  const weekSection = document.getElementById('week-section');
+  const weekLabel = document.getElementById('week-label');
+
+  document.getElementById('opt-new').className = 'host-opt' + (type==='new' ? ' active-new' : '');
+  document.getElementById('opt-sensual').className = 'host-opt' + (type==='sensual' ? ' active-sensual' : '');
+
+  document.getElementById('none-alert').classList.toggle('show', type==='none');
+  document.getElementById('new-alert').classList.toggle('show', type==='new');
+  document.getElementById('sensual-alert').classList.toggle('show', type==='sensual');
+
+  // Hide week section if no host type selected
+  weekSection.style.display = type==='none' ? 'none' : '';
+  weekLabel.textContent = type==='new' ? 'New Host — Select Week' : 'Sensual Host — Select Week';
+
+  selectedWeek = 1;
+  renderWeekTabs();
+  renderWeekPreview();
+  clearResult();
+}
+
+// ─── WEEK SELECT ──────────────────────────────────────────────────────────────
+function selectWeek(w) {
+  selectedWeek = w;
+  renderWeekTabs();
+  renderWeekPreview();
+  clearResult();
+}
+
+function renderWeekTabs() {
+  const tabs = document.querySelectorAll('.week-tab');
+  tabs.forEach((tab, i) => {
+    tab.className = 'week-tab';
+    if (i+1 === selectedWeek) {
+      tab.className += hostType==='sensual' ? ' sensual-active' : ' active';
+    }
+  });
+}
+
+function renderWeekPreview() {
+  const data = hostType==='new' ? NEW_HOST_WEEKS : SENSUAL_WEEKS;
+  const container = document.getElementById('week-preview');
+  let html = `<div class="wp-row header-row">
+    <div class="wp-cell header-cell">Week</div>
+    <div class="wp-cell header-cell">Ruby Target</div>
+    <div class="wp-cell header-cell">Days/Hrs</div>
+    <div class="wp-cell header-cell">Guarantee</div>
+  </div>`;
+  data.forEach((row, i) => {
+    const isActive = (i+1) === selectedWeek;
+    const rowClass = isActive ? (hostType==='sensual' ? 'wp-row sensual-active-row' : 'wp-row active-row') : 'wp-row';
+    const gVal = row.guarantee > 0 ? `$${row.guarantee}` : '$0';
+    const gClass = isActive ? 'wp-cell active-val' : 'wp-cell';
+    html += `<div class="${rowClass}">
+      <div class="${gClass}" style="${isActive?'color:#fff;font-weight:700':''}">${row.week}</div>
+      <div class="${gClass}" style="${isActive?'color:var(--pink2);font-weight:700':''}">${row.target}</div>
+      <div class="${gClass}" style="${isActive?'color:var(--cyan2);font-weight:700':''}">${row.days}</div>
+      <div class="${gClass}">${gVal}</div>
+    </div>`;
+  });
+  // Extra hint for sensual w5+
+  if (hostType==='sensual') {
+    container.innerHTML = html;
+    const hint = document.createElement('div');
+    hint.style.cssText = 'padding:8px 12px;font-family:Rajdhani,sans-serif;font-size:11px;color:var(--text-muted);border-top:1px solid rgba(0,229,255,0.05);';
+    hint.textContent = 'W5+ guarantee of $15 also applies if the 3,00,000 Ruby target is achieved.';
+    container.appendChild(hint);
+  } else {
+    container.innerHTML = html;
+    const hint = document.createElement('div');
+    hint.style.cssText = 'padding:8px 12px;font-family:Rajdhani,sans-serif;font-size:11px;color:var(--text-muted);border-top:1px solid rgba(0,229,255,0.05);';
+    hint.textContent = 'Missing one week does not cancel the next week\'s guarantee.';
+    container.appendChild(hint);
+  }
+}
+
+// ─── CALCULATE ────────────────────────────────────────────────────────────────
+function calculate() {
+  const rawInput = document.getElementById('ruby-input').value.trim();
+  if (!rawInput || isNaN(rawInput) || Number(rawInput) < 0) {
+    const inp = document.getElementById('ruby-input');
+    inp.style.borderColor = 'rgba(255,60,168,0.6)';
+    inp.style.boxShadow = '0 0 0 3px rgba(255,60,168,0.08),0 0 16px rgba(255,60,168,0.1)';
+    setTimeout(()=>{inp.style.borderColor='';inp.style.boxShadow='';},2000);
+    return;
+  }
+
+  const rubies = Math.round(Number(rawInput));
+  const weekIdx = selectedWeek - 1;
+  const data = hostType==='new' ? NEW_HOST_WEEKS : SENSUAL_WEEKS;
+  const rawTargets = hostType==='new' ? NEW_HOST_RAW_TARGETS : SENSUAL_RAW_TARGETS;
+  const weekData = hostType !== 'none' ? data[weekIdx] : null;
+
+  // Gift income in USD
+  const giftUSD = rubies / RUBY_PER_USD;
+
+  // Weekly bonus: 30% if 4 valid days + 10 valid hours
+  const bonusRubies = Math.round(rubies * 0.3);
+  const bonusUSD = bonusRubies / RUBY_PER_USD;
+
+  // Guarantee: only if target met, and not 'none'
+  const target = hostType !== 'none' ? rawTargets[weekIdx] : 0;
+  let guaranteeUSD = 0;
+  let targetMet = true;
+  let missMsg = '';
+
+  if (hostType === 'none') {
+    guaranteeUSD = 0;
+  } else if (hostType === 'new') {
+    if (selectedWeek === 5) {
+      guaranteeUSD = 0;
+      targetMet = false;
+      missMsg = 'Week 5+ only follows <strong>basic policy</strong> — no guarantee applicable.';
+    } else if (rubies < target && target > 0) {
+      guaranteeUSD = 0;
+      targetMet = false;
+      const needed = target.toLocaleString('en-IN');
+      missMsg = `Target missed — <strong>${needed}</strong> Rubies required. No guarantee this week.`;
+    } else {
+      guaranteeUSD = weekData.guarantee;
+    }
+  } else {
+    // sensual
+    if (rubies < target && target > 0) {
+      guaranteeUSD = 0;
+      targetMet = false;
+      const needed = target.toLocaleString('en-IN');
+      missMsg = `Target missed — <strong>${needed}</strong> Rubies required for W${selectedWeek}. No guarantee this week.`;
+    } else {
+      guaranteeUSD = weekData.guarantee;
+    }
+  }
+
+  const totalUSD = giftUSD + bonusUSD + guaranteeUSD;
+  const totalRubies = rubies + bonusRubies;
+
+  // ROI: investment = total earned / coin_per_usd ratio gives spend
+  // Platform buys at 20000 ruby = 1 USD; users buy coins at 8300 coins = 1 USD
+  const investmentUSD = totalUSD * (COIN_PER_USD / RUBY_PER_USD);
+  // Actually: user spends coins. For every coin gifted, sender spends 1 coin = 1/8300 USD
+  // So investment = rubies / 8300 (coins gifted * cost per coin)
+  // Actually simpler: sender bought coins at 8300/USD, host earns at 20000 ruby/USD
+  // So for rubies earned: coins spent by senders = rubies (1:1 coin to ruby), cost = rubies/8300
+  const investUSD = rubies / COIN_PER_USD;
+  const netGain = totalUSD - investUSD;
+  const returnPct = investUSD > 0 ? ((totalUSD / investUSD) * 100) : 0;
+
+  // ─── RENDER ───
+  document.getElementById('r-rubies').textContent = rubies.toLocaleString('en-IN') + ' Rubies';
+  document.getElementById('r-gift-usd').textContent = '$' + giftUSD.toFixed(2);
+  document.getElementById('r-bonus').textContent = '$' + bonusUSD.toFixed(2);
+  document.getElementById('r-bonus-sub').textContent = '+' + bonusRubies.toLocaleString('en-IN') + ' Rubies (4 days 10hrs)';
+  
+  const gEl = document.getElementById('r-guarantee');
+  const gSubEl = document.getElementById('r-guarantee-sub');
+  if (hostType === 'none') {
+    gEl.className = 'res-val-muted';
+    gEl.textContent = 'N/A';
+    gSubEl.textContent = 'No host type selected';
+    gSubEl.style.color = 'var(--text-muted)';
+  } else if (guaranteeUSD > 0) {
+    gEl.className = 'res-val-green';
+    gEl.textContent = '$' + guaranteeUSD.toFixed(2);
+    gSubEl.textContent = 'Target achieved ✓';
+    gSubEl.style.color = 'rgba(0,255,157,0.5)';
+  } else {
+    gEl.className = 'res-val-muted';
+    gEl.textContent = '$0';
+    gSubEl.textContent = hostType==='new' && selectedWeek===5 ? 'Basic policy only' : (target===0 ? 'No target needed' : 'Target missed ✗');
+    gSubEl.style.color = target===0 && hostType!=='new' ? 'rgba(0,255,157,0.4)' : 'rgba(255,60,168,0.5)';
+  }
+  if (target === 0 && guaranteeUSD > 0) {
+    gSubEl.textContent = 'No target — guaranteed automatically';
+    gSubEl.style.color = 'rgba(0,255,157,0.4)';
+  }
+
+  document.getElementById('r-total').textContent = '$' + totalUSD.toFixed(2);
+  document.getElementById('r-total-ruby').textContent = totalRubies.toLocaleString('en-IN') + ' Rubies total earned';
+
+  // ROI
+  document.getElementById('r-investment').textContent = '$' + investUSD.toFixed(2);
+  document.getElementById('r-earned').textContent = '$' + totalUSD.toFixed(2);
+  
+  const retEl = document.getElementById('r-return');
+  retEl.textContent = returnPct.toFixed(1) + '%';
+  retEl.className = 'roi-val ' + (returnPct >= 100 ? 'green' : 'pink');
+
+  const netEl = document.getElementById('r-net');
+  netEl.textContent = (netGain >= 0 ? '+' : '') + '$' + netGain.toFixed(2);
+  netEl.className = 'roi-val ' + (netGain >= 0 ? 'green' : 'pink');
+
+  const missEl = document.getElementById('miss-alert');
+  if (missMsg) {
+    missEl.innerHTML = missMsg;
+    missEl.classList.add('show');
+  } else {
+    missEl.classList.remove('show');
+  }
+
+  const rc = document.getElementById('result-card');
+  rc.classList.add('show');
+  setTimeout(()=>rc.scrollIntoView({behavior:'smooth',block:'start'}), 100);
+}
+
+function resetAll() {
+  document.getElementById('ruby-input').value = '';
+  selectedWeek = 1;
+  hostType = 'new'; // set to new so toggle inside selectHost flips to none
+  selectHost('none');
+  clearResult();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function clearResult() {
+  document.getElementById('result-card').classList.remove('show');
+}
+
+// ─── PARTICLES ────────────────────────────────────────────────────────────────
+const pc = document.getElementById('particles');
+const colors = ['#00e5ff','#ff3ca8','#4df3ff','#ff6ec4','#a855f7','#00ff9d','#fbbf24'];
+for(let i=0;i<80;i++){
+  const p=document.createElement('div');p.className='particle';
+  const size=1+Math.random()*2.8;const col=colors[Math.floor(Math.random()*colors.length)];
+  p.style.cssText=`left:${Math.random()*100}%;width:${size}px;height:${size}px;background:${col};box-shadow:0 0 ${size*3}px ${col};animation-duration:${3+Math.random()*3}s;animation-delay:${Math.random()*3}s;opacity:0;`;
+  pc.appendChild(p);
+}
+
+// ─── FLOATING EMOJIS ─────────────────────────────────────────────────────────
+const emojis=['🎙️','🏆','💎','⭐','🔥','✨','🎵','💫','🎤','👑'];
+function createFloatEmoji(){
+  const el=document.createElement('div');el.className='float-emoji';
+  el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+  const dur=6+Math.random()*6;const size=16+Math.random()*14;
+  el.style.cssText=`left:${Math.random()*95}%;bottom:-40px;font-size:${size}px;animation-duration:${dur}s;animation-delay:${Math.random()*3}s;`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),(dur+3)*1000);
+}
+setInterval(createFloatEmoji,1200);
+for(let i=0;i<6;i++) setTimeout(createFloatEmoji,i*600);
+
+// ─── RIPPLE ───────────────────────────────────────────────────────────────────
+document.addEventListener('click',function(e){
+  const rippleColors=['rgba(0,229,255,0.7)','rgba(255,60,168,0.7)','rgba(168,85,247,0.7)','rgba(0,255,157,0.6)'];
+  const col=rippleColors[Math.floor(Math.random()*rippleColors.length)];
+  for(let r=0;r<2;r++){
+    const ring=document.createElement('div');const delay=r*120;
+    ring.style.cssText=`position:fixed;left:${e.clientX}px;top:${e.clientY}px;width:0;height:0;border-radius:50%;border:2px solid ${col};transform:translate(-50%,-50%);pointer-events:none;z-index:9999;box-shadow:0 0 10px ${col};`;
+    document.body.appendChild(ring);
+    ring.animate([{width:'0px',height:'0px',opacity:1},{width:'120px',height:'120px',opacity:0}],{duration:600,delay,easing:'ease-out',fill:'forwards'}).onfinish=()=>ring.remove();
+  }
+});
+
+// ─── SHOOTING STARS ───────────────────────────────────────────────────────────
+function createShootingStar(){
+  const star=document.createElement('div');
+  const starColors=[{c:'rgba(255,60,168,0.95)',g:'rgba(255,60,168,0.5)'},{c:'rgba(0,255,157,0.95)',g:'rgba(0,255,157,0.5)'},{c:'rgba(0,229,255,0.95)',g:'rgba(0,229,255,0.5)'}];
+  const cl=starColors[Math.floor(Math.random()*starColors.length)];
+  const angle=30+Math.random()*20;const len=70+Math.random()*90;const dur=0.9+Math.random()*0.6;
+  const startX=Math.random()*(window.innerWidth*0.6);const startY=Math.random()*(window.innerHeight*0.5);
+  star.style.cssText=`position:fixed;top:${startY}px;left:${startX}px;width:${len}px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,${cl.c});transform:rotate(${angle}deg);transform-origin:0 50%;z-index:0;pointer-events:none;box-shadow:0 0 6px ${cl.g};`;
+  document.body.appendChild(star);
+  star.animate([{opacity:1,transform:`rotate(${angle}deg) translateX(0)`},{opacity:0,transform:`rotate(${angle}deg) translateX(${len+260}px)`}],{duration:dur*1000,easing:'ease-in',fill:'forwards'}).onfinish=()=>star.remove();
+}
+setInterval(()=>createShootingStar(),1000);
+setTimeout(()=>setInterval(()=>createShootingStar(),1000),330);
+setTimeout(()=>setInterval(()=>createShootingStar(),1000),660);
+
+// Enter key support
+document.getElementById('ruby-input').addEventListener('keydown',function(e){
+  if(e.key==='Enter') calculate();
+});
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+document.getElementById('week-section').style.display = 'none';
+renderWeekTabs();
+renderWeekPreview();
+</script>
+</body>
+</html>
