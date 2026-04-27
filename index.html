@@ -186,7 +186,7 @@ body{font-family:'Exo 2',sans-serif;background:var(--navy);color:var(--text);ove
 
 <div class="wrapper">
   <header class="header">
-    <div class="logo-mark"><span>R</span></div>
+    <div class="logo-mark"><img src="logo.png" alt="Rizz Live" style="width:100%;height:100%;object-fit:cover;border-radius:11px;" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\'font-family:Orbitron,monospace;font-weight:900;font-size:18px;background:linear-gradient(135deg,#00e5ff,#ff3ca8);-webkit-background-clip:text;-webkit-text-fill-color:transparent\'>R</span>'"/></div>
     <div>
       <div class="brand-name">Rizz Live</div>
       <div class="brand-sub">Live Streaming Platform</div>
@@ -599,6 +599,7 @@ for(let i=0;i<80;i++){
   p.style.cssText=`left:${Math.random()*100}%;width:${size}px;height:${size}px;background:${col};box-shadow:0 0 ${size*3}px ${col};animation-duration:${3+Math.random()*3}s;animation-delay:${Math.random()*3}s;opacity:0;`;
   pc.appendChild(p);
 }
+
 
 // ─── RIPPLE ───────────────────────────────────────────────────────────────────
 document.addEventListener('click',function(e){
